@@ -29,7 +29,7 @@ public class SkillsService {
     }
 
     public int save(Skills skills) {
-        return skillsRepository.insert(skills);
+        return  skillsRepository.insert(skills);
     }
 
     public int update(Skills skills) {
