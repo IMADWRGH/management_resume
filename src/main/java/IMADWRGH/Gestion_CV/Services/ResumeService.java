@@ -3,8 +3,12 @@ package IMADWRGH.Gestion_CV.Services;
 import IMADWRGH.Gestion_CV.Model.Companies;
 import IMADWRGH.Gestion_CV.Model.Resume;
 import IMADWRGH.Gestion_CV.Model.Skills;
+import IMADWRGH.Gestion_CV.Repository.ResumeCompanyRepository;
 import IMADWRGH.Gestion_CV.Repository.ResumeRepository;
+import IMADWRGH.Gestion_CV.Repository.ResumeSkillsRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ResumeService {
@@ -13,24 +17,35 @@ public class ResumeService {
     private final InformationService informationService;
     private final CompaniesService companiesService;
     private final ResumeRepository resumeRepository;
+    private final ResumeCompanyRepository resumeCompanyRepository;
 
-    public ResumeService(SkillsService skillsService, InformationService informationService, CompaniesService companiesService, ResumeRepository resumeRepository) {
+    private  final ResumeSkillsRepository resumeSkillsRepository;
+
+    public ResumeService(SkillsService skillsService, InformationService informationService, CompaniesService companiesService, ResumeRepository resumeRepository, ResumeCompanyRepository resumeCompanyRepository, ResumeSkillsRepository resumeSkillsRepository) {
         this.skillsService = skillsService;
         this.informationService = informationService;
         this.companiesService = companiesService;
         this.resumeRepository = resumeRepository;
+        this.resumeCompanyRepository = resumeCompanyRepository;
+        this.resumeSkillsRepository = resumeSkillsRepository;
     }
 
 
     public Resume create(Resume resume){
+       var idResume= resumeRepository.insert(resume);
         for (Skills skill : resume.getIdSkills()) {
-            skillsService.save(skill);
+           var id= skillsService.save(skill);
+            resumeSkillsRepository.insert(idResume,id);
         }
         for (Companies companies:resume.getIdComps()){
-            companiesService.save(companies);
+            var id = companiesService.save(companies);
+            resumeCompanyRepository.insert(idResume, id);
         }
-        informationService.save(resume.getIdInfons());
-        resumeRepository.insert(resume);
+            informationService.save(resume.getIdInfons());
+
         return resume;
+    }
+    public Optional<Resume> getResume(int id){
+       return resumeRepository.findById(id);
     }
 }
