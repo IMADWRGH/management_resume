@@ -2,8 +2,12 @@ package IMADWRGH.Gestion_CV.Repository;
 
 import IMADWRGH.Gestion_CV.Model.Companies;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +46,17 @@ public class CompaniesRepository implements GenericRepository<Companies>{
 
     @Override
     public int insert(Companies companies) {
-        return template.update("insert into companies ( name, department, yearExpression) " + "values( ?, ?, ?)",
-               companies.getName(), companies.getDepartment(),companies.getYearExpression());
+        String sql = "insert into companies (name,department,yearExpression) VALUES (?,?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, companies.getName());
+            ps.setString(2,companies.getDepartment());
+            ps.setString(3,companies.getYearExpression());
+            return ps;
+        }, keyHolder);
+        System.out.println(keyHolder.getKey().intValue());
+        return  keyHolder.getKey().intValue();
     }
 
     @Override
