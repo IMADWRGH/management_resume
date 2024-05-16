@@ -3,8 +3,12 @@ package IMADWRGH.Gestion_CV.Repository;
 import IMADWRGH.Gestion_CV.Model.Companies;
 import IMADWRGH.Gestion_CV.Model.Information;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +47,16 @@ public class InformationRepository  implements GenericRepository<Information> {
 
     @Override
     public int insert(Information information) {
-        return template.update(" insert into information ( full_name, email) " + "values( ?, ?)",
-                information.getFull_name(), information.getEmail());
+        String insertSql = "insert into information (full_name, email) VALUES (?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, information.getFull_name());
+            ps.setString(2, information.getEmail());
+            return ps;
+        }, keyHolder);
+        System.out.println(keyHolder.getKey().intValue());
+        return  keyHolder.getKey().intValue();
     }
 
     @Override

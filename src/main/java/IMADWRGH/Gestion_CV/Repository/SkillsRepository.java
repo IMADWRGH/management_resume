@@ -2,7 +2,12 @@ package IMADWRGH.Gestion_CV.Repository;
 
 import IMADWRGH.Gestion_CV.Model.Skills;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,9 +46,18 @@ public class SkillsRepository implements GenericRepository<Skills> {
 
     @Override
     public int insert(Skills skills) {
-        return template.update("insert into skills (name, level) " + "values( ?, ?)",
-                skills.getName(), skills.getLevel());
+        String insertSql = "insert into skills (name, level) VALUES (?,?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, skills.getName());
+            ps.setString(2, skills.getLevel());
+            return ps;
+        }, keyHolder);
+        System.out.println(keyHolder.getKey().intValue());
+        return  keyHolder.getKey().intValue();
     }
+
 
     @Override
     public int update(Skills skills) {
