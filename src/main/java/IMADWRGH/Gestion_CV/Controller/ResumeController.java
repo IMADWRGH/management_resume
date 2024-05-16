@@ -23,10 +23,15 @@ public class ResumeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping(path = "/get/{id}")
-    public  ResponseEntity<Resume> getResume(@PathVariable int id){
-        return null;
+    public ResponseEntity<Resume> getResume(int id) {
+      var optionalResume= resumeService.getResume(id);
+        if (optionalResume.isPresent()) {
+            return new ResponseEntity<>(optionalResume.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
+
 
 
 
