@@ -31,7 +31,8 @@ public class CompaniesService {
     }
 
     public int save(Companies companies) {
-        return companiesRepository.insert(companies);
+        companiesRepository.insert(companies);
+        return companies.getId();
     }
 
     public int update(Companies companies) {
