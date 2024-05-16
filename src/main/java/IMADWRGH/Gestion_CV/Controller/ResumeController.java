@@ -23,13 +23,20 @@ public class ResumeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<Resume> getResume(int id) {
+    public ResponseEntity<Resume> getResume(@PathVariable(name = "id") int id) {
       var optionalResume= resumeService.getResume(id);
         if (optionalResume.isPresent()) {
             return new ResponseEntity<>(optionalResume.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteResume(@PathVariable(name = "id") Integer id) {
+        resumeService.delete(id);
+        return new ResponseEntity<>("resume id: "+ id + " deleted successfully", HttpStatus.OK);
     }
 
 
