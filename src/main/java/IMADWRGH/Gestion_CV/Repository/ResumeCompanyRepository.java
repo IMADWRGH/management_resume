@@ -12,7 +12,7 @@ public class ResumeCompanyRepository {
     }
 
     public int deleteById(int id) {
-        return template.update("delete from resume_company where id=?", new Object[] {id});
+        return template.update("delete from resume_company where id_resume=?", new Object[] {id});
     }
 
     public int insert(int idResume, int idCompany) {
