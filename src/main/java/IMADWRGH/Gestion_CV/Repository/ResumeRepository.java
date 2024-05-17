@@ -2,7 +2,7 @@ package IMADWRGH.Gestion_CV.Repository;
 
 import IMADWRGH.Gestion_CV.Model.Information;
 import IMADWRGH.Gestion_CV.Model.Resume;
-import IMADWRGH.Gestion_CV.Model.Skills;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -34,11 +34,10 @@ public class ResumeRepository implements GenericRepository<Resume>{
 
     @Override
     public Optional<Resume> findById(int id) {
-        return Optional.ofNullable(template.queryForObject(
-                "select * from resume where id=?",
-                Resume.class,id));
+        String sql="select * from resume where id=?";
+        Resume resume =template.queryForObject(sql, new BeanPropertyRowMapper<>(Resume.class),id);
+        return Optional.ofNullable(resume);
     }
-
     @Override
     public int deleteById(int id) {
         return template.update("delete from resume where id=?", new Object[] {id});
