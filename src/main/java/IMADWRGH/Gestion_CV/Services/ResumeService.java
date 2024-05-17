@@ -48,4 +48,8 @@ public class ResumeService {
     public Optional<Resume> getResume(int id){
        return resumeRepository.findById(id);
     }
-}
+    public Boolean delete(int id){
+        resumeRepository.deleteById(id);
+        return Boolean.TRUE;
+    }
+    }
