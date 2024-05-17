@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping(path = "/resume")
+@RequestMapping(path = "/api/resume")
 public class ResumeController {
     private final ResumeService resumeService;
 
@@ -22,7 +22,7 @@ public class ResumeController {
         resumeService.create(resume);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
+    @GetMapping(path = "/{id}")
     public ResponseEntity<Resume> getResume(@PathVariable(name = "id") int id) {
       var optionalResume= resumeService.getResume(id);
         if (optionalResume.isPresent()) {
@@ -33,7 +33,7 @@ public class ResumeController {
     }
 
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(path = "/delete/{id}")
     public ResponseEntity<String> deleteResume(@PathVariable(name = "id") Integer id) {
         resumeService.delete(id);
         return new ResponseEntity<>("resume id: "+ id + " deleted successfully", HttpStatus.OK);
