@@ -1,6 +1,5 @@
 package IMADWRGH.Gestion_CV.Controller;
 
-import IMADWRGH.Gestion_CV.Exception.InvalidRequestException;
 import IMADWRGH.Gestion_CV.Model.Resume;
 import IMADWRGH.Gestion_CV.Services.ResumeService;
 import org.springframework.http.HttpStatus;
