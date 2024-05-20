@@ -12,16 +12,20 @@ import java.util.Date;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProfileNotFoundException.class)
-    public ResponseEntity<String> handleProductNotFoundException(ProfileNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> profileNotFoundException(ProfileNotFoundException msg) {
+        return new ResponseEntity<>(msg.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidRequestException.class)
     @ResponseBody
-    public ResponseEntity<ErrorBody> handleInvalidRequestException(InvalidRequestException ex) {
-        ErrorBody body = new ErrorBody();
-        body.setMsg(ex.getMessage());
-        body.setDate(new Date());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    public ResponseEntity<String> invalidRequestException(InvalidRequestException msg) {
+        return new ResponseEntity<>(msg.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ResumeNotFoundException.class)
+    @ResponseBody
+    public ResponseEntity<String> resumeNotFoundException(ResumeNotFoundException msg){
+        return new ResponseEntity<>(msg.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
 }

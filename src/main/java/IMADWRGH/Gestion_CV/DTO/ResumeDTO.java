@@ -11,4 +11,6 @@ public class ResumeDTO {
     private  int id;
     private String profile;
     private int idInfons;
+    private int id_company;
+    private int id_skills;
 }

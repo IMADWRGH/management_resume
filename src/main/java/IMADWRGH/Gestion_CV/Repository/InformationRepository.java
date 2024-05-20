@@ -1,7 +1,7 @@
 package IMADWRGH.Gestion_CV.Repository;
 
-import IMADWRGH.Gestion_CV.Model.Companies;
 import IMADWRGH.Gestion_CV.Model.Information;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -35,9 +35,10 @@ public class InformationRepository  implements GenericRepository<Information> {
 
     @Override
     public Optional<Information> findById(int id) {
-        return Optional.ofNullable(template.queryForObject(
-                " select * from information where id=?",
-              Information.class,id));
+        System.out.println("infons id "+id);
+        String sql="select * from information where id=?";
+        Information information =template.queryForObject(sql, new BeanPropertyRowMapper<>(Information.class),id);
+        return Optional.ofNullable(information);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package IMADWRGH.Gestion_CV.Services;
 
 import IMADWRGH.Gestion_CV.Model.Companies;
-import IMADWRGH.Gestion_CV.Model.Skills;
 import IMADWRGH.Gestion_CV.Repository.CompaniesRepository;
 import org.springframework.stereotype.Service;
 

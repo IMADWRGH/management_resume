@@ -1,5 +1,7 @@
 package IMADWRGH.Gestion_CV.Services;
 
+import IMADWRGH.Gestion_CV.Exception.ProfileNotFoundException;
+import IMADWRGH.Gestion_CV.Exception.ResumeNotFoundException;
 import IMADWRGH.Gestion_CV.Model.Companies;
 import IMADWRGH.Gestion_CV.Model.Resume;
 import IMADWRGH.Gestion_CV.Model.Skills;
@@ -31,8 +33,12 @@ public class ResumeService {
     }
 
 
-    public Resume create(Resume resume){
-       var idResume= resumeRepository.insert(resume);
+    public void create(Resume resume){
+        if(resume.getProfile()==null){
+            throw new ProfileNotFoundException("Empty Profile");
+        }
+        var idInfons=informationService.save(resume.getIdInfons());
+       var idResume= resumeRepository.insert(resume,idInfons);
         for (Skills skill : resume.getIdSkills()) {
            var id= skillsService.save(skill);
             resumeSkillsRepository.insert(idResume,id);
@@ -41,12 +47,14 @@ public class ResumeService {
             var id = companiesService.save(companies);
             resumeCompanyRepository.insert(idResume, id);
         }
-            informationService.save(resume.getIdInfons());
 
-        return resume;
     }
     public Optional<Resume> getResume(int id){
-       return resumeRepository.findById(id);
+        Optional<Resume> optionalResume=resumeRepository.findById(id);
+        if (!optionalResume.isPresent()) {
+          throw new ResumeNotFoundException("Resume not exist");
+        }
+       return optionalResume;
     }
     public Boolean delete(int id){
         resumeRepository.deleteById(id);

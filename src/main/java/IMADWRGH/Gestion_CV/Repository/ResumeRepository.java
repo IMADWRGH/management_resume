@@ -1,6 +1,6 @@
 package IMADWRGH.Gestion_CV.Repository;
 
-import IMADWRGH.Gestion_CV.Model.Information;
+import IMADWRGH.Gestion_CV.DTO.ResumeDTO;
 import IMADWRGH.Gestion_CV.Model.Resume;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,9 +16,15 @@ import java.util.Optional;
 @Repository
 public class ResumeRepository implements GenericRepository<Resume>{
     private final JdbcTemplate template;
+    private final InformationRepository informationRepository;
+    private final ResumeCompanyRepository resumeCompanyRepository;
+    private final ResumeSkillsRepository resumeSkillsRepository;
 
-    public ResumeRepository(JdbcTemplate template) {
+    public ResumeRepository(JdbcTemplate template, InformationRepository informationRepository, ResumeCompanyRepository resumeCompanyRepository, ResumeSkillsRepository resumeSkillsRepository) {
         this.template = template;
+        this.informationRepository = informationRepository;
+        this.resumeCompanyRepository = resumeCompanyRepository;
+        this.resumeSkillsRepository = resumeSkillsRepository;
     }
 
     @Override
@@ -35,27 +41,41 @@ public class ResumeRepository implements GenericRepository<Resume>{
     @Override
     public Optional<Resume> findById(int id) {
         String sql="select * from resume where id=?";
-        Resume resume =template.queryForObject(sql, new BeanPropertyRowMapper<>(Resume.class),id);
-        return Optional.ofNullable(resume);
+        ResumeDTO resumedto =template.queryForObject(sql, new BeanPropertyRowMapper<>(ResumeDTO.class),id);
+        System.out.println(resumedto.getProfile());
+        Resume resume=new Resume();
+        resume.setId(resumedto.getId());
+        resume.setProfile(resumedto.getProfile());
+        System.out.println(resumedto.getIdInfons());
+        resume.setIdInfons(informationRepository.findById(resumedto.getIdInfons()).get());
+        resume.setIdComps(resumeCompanyRepository.findById(resume.getId()));
+        resume.setIdSkills(resumeSkillsRepository.findById(resume.getId()));
+      return Optional.of(resume);
     }
     @Override
-    public int deleteById(int id) {
-        return template.update("delete from resume where id=?", new Object[] {id});
-
+    public int  deleteById(int id) {
+            System.out.println("delete work");
+            resumeCompanyRepository.deleteById(id);
+            resumeSkillsRepository.deleteById(id);
+            template.update("DELETE FROM information WHERE id=?",id);
+            System.out.println("test");
+            return template.update("DELETE FROM resume WHERE id=?",id);
     }
 
-    @Override
-    public int insert(Resume resume) {
-        String profile = resume.getProfile();
-        Information information = resume.getIdInfons();
+
+    public int insert(Resume resume,int idInfons) {
+//        return template.update("insert into resume ( profile, idInfons) " + "values( ?, ?)",
+//                resume.getProfile(), idInfons);
         String sql = "insert into resume (profile, idInfons) VALUES (?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        return template.update(connection -> {
+        template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, profile);
-            ps.setLong(2, information.getId());
+            ps.setString(1, resume.getProfile());
+            ps.setInt(2, idInfons);
             return ps;
         }, keyHolder);
+        System.out.println(keyHolder.getKey().intValue());
+        return  keyHolder.getKey().intValue();
     }
 
 
@@ -63,5 +83,10 @@ public class ResumeRepository implements GenericRepository<Resume>{
     public int update(Resume resume) {
         return template.update("update resume " + " set  profile= ? " + " where id = ?",
                 resume.getId(), resume.getProfile());
+    }
+
+    @Override
+    public int insert(Resume resume){
+        return 0;
     }
 }

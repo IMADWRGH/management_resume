@@ -1,5 +1,6 @@
 package IMADWRGH.Gestion_CV.Controller;
 
+import IMADWRGH.Gestion_CV.Exception.InvalidRequestException;
 import IMADWRGH.Gestion_CV.Model.Resume;
 import IMADWRGH.Gestion_CV.Services.ResumeService;
 import org.springframework.http.HttpStatus;
@@ -19,11 +20,15 @@ public class ResumeController {
 
     @PostMapping(path = "/create")
     public ResponseEntity<Resume> create(@RequestBody Resume resume) {
+//        if (resume.equals(resume)){
+//            throw new InvalidRequestException("Invalid Resume request");
+//        }
         resumeService.create(resume);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     @GetMapping(path = "/{id}")
     public ResponseEntity<Resume> getResume(@PathVariable(name = "id") int id) {
+        System.out.println("test ");
       var optionalResume= resumeService.getResume(id);
         if (optionalResume.isPresent()) {
             return new ResponseEntity<>(optionalResume.get(), HttpStatus.OK);
